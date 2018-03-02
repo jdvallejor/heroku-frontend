@@ -1,43 +1,38 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import 'rxjs/add/operator/toPromise';
-import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
+import { catchError, map, tap } from 'rxjs/operators';
+
+import { Topic } from '../models/topic';
+
+const httpOptions = {headers: new HttpHeaders({ 'Content-Type': 'application/json' })};
 
 @Injectable()
 export class TopicsService {
+  private apiUrl = 'https://integrador2018.herokuapp.com/topics'; 
 
-  searchUrl = "http://localhost:3000";
+  constructor(
+    private http: HttpClient
+  ) { }
 
-  constructor(private http: Http, private route: ActivatedRoute, private router: Router) { }
-
-  //Take all the topics from the json
-  gettopics(status: number): Promise<any> {
-    let searchUrl = this.searchUrl + "/topics?status="+ status;
-    let promise = new Promise((resolve, reject) => {
-      this.http.get(searchUrl).toPromise()
-      .then(res => { resolve(res.json()); }, msg => { reject(msg); });
-    });
-
-    return promise;
+  getTopics(status: number): Observable<Topic[]>{
+    return this.http.get<Topic[]>(`${this.apiUrl}/findByStatus?status=${status}`)
   }
 
-  //Update topic 
-  createTopic(topics: any) {
-    let searchUrl = this.searchUrl + "/topics/" + topics.id;
-    let promise = new Promise((resolve, reject) => {
-      this.http.put(searchUrl, topics).toPromise().
-      then(res => {this.router.navigate(['/groups_to_be_open']);}, msg => { reject(msg); });
-    });
+  deleteTopic(topic:Topic | number): Observable<Topic>{
+      const id = typeof topic === 'number' ? topic : topic.id;
+      const url = `${this.apiUrl}/${id}`;
+      return this.http.put<Topic>(url,topic, httpOptions).pipe(
+        tap(_ => console.log(`deleted topic id=${id}`))
+      );
   }
 
-    //Delete topic 
-    deleteTopic(topics: any) {
-      let searchUrl = this.searchUrl + "/topics/" + topics.id;
-      let promise = new Promise((resolve, reject) => {
-        this.http.put(searchUrl, topics).toPromise().
-        then(res => {this.router.navigate(['/']);}, msg => { reject(msg); });
-      });
-    }
+  openTopic(topic:Topic | number): Observable<Topic>{
+    const id = typeof topic === 'number' ? topic : topic.id;
+    const url = `${this.apiUrl}/${id}`;
+    return this.http.put<Topic>(url,topic, httpOptions).pipe(
+      tap(_ => console.log(`created topic id=${id}`))
+    );
+  }
 
 }
-

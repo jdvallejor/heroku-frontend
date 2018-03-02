@@ -1,9 +1,8 @@
-<div class="contenedor">
-  <h1>{{title}}</h1>
-  <nav>
-    <a routerLink="/groups_to_be_open">Groups to be open</a>
-    <a routerLink="/active_groups">Active Groups</a>
-    <a routerLink="/closed_groups">closed Groups</a>
-  </nav>
-  <router-outlet></router-outlet>
-</div>
+<nav class="nav">
+  <ul>
+    <li><a class="waves-effect waves-light" routerLink="topicsToBeOpen">Groups to be open</a></li>
+    <li><a class="waves-effect waves-light" routerLink="openTopics">Opened topics</a></li>
+    <li><a class="waves-effect waves-light" routerLink="closedGroups">Closed topics</a></li>
+  </ul>
+</nav>
+<router-outlet></router-outlet>
